@@ -141,76 +141,116 @@ def detect_fake_review(review_text):
     
     return prediction, confidence
 
-st.set_page_config(page_title="Review Authenticity Checker", layout="centered", initial_sidebar_state="collapsed")
+st.set_page_config(
+    page_title="Review Authenticity Checker",
+    page_icon="🔍",
+    layout="centered",
+)
 
+# Header
 st.markdown("""
-    <div style='text-align: center; padding: 20px 0; margin-bottom: 30px;'>
-        <h1 style='font-size: 2.5em; color: #3b82f6; margin: 0;'>🔍 Review Authenticity Checker</h1>
-        <p style='color: #94a3b8; font-size: 1em; margin: 10px 0 0 0;'>Detect fake reviews with pattern analysis</p>
-    </div>
+<div style="text-align:center;padding:15px;">
+    <h1 style="color:#3b82f6;">🔍 Review Authenticity Checker</h1>
+    <p style="color:gray;">
+        Analyze product reviews using Rule-Based Pattern Analysis
+    </p>
+</div>
 """, unsafe_allow_html=True)
 
 st.divider()
 
-st.markdown("### Enter Review Text")
-review_input = st.text_area("Review", value=st.session_state.review_text, placeholder="Paste the review here...", height=100, label_visibility="collapsed")
-st.session_state.review_text = review_input
+# Sidebar
+with st.sidebar:
+    st.title("About")
+    st.write("""
+This application uses a rule-based pattern analysis engine
+to classify product reviews as **Fake** or **Genuine**.
+### Tech Stack
+- Python
+- Streamlit
+- Regex
+- Keyword Scoring
+""")
 
-col1, col2 = st.columns(2)
-with col1:
-    analyze_button = st.button("🔍 Analyze", use_container_width=True, key="analyze")
-with col2:
-    clear_button = st.button("🗑️ Clear", use_container_width=True, key="clear")
+st.subheader("Enter Review")
+review = st.text_area(
+    "",
+    value=st.session_state.review_text,
+    placeholder="Paste the review here...",
+    height=150,
+)
+st.session_state.review_text = review
 
-if clear_button:
+c1, c2 = st.columns(2)
+with c1:
+    check = st.button("🔍 Analyze", use_container_width=True)
+with c2:
+    clear = st.button("🗑️ Clear", use_container_width=True)
+
+if clear:
     st.session_state.review_text = ""
     st.rerun()
 
-st.divider()
+if check:
+    if review.strip() == "":
+        st.warning("⚠️ Please enter a review.")
+        st.stop()
 
-if analyze_button and review_input.strip():
-    prediction, confidence = detect_fake_review(review_input)
-    
-    col1, col2, col3 = st.columns(3, gap="small")
-    with col1:
-        if prediction == "GENUINE":
-            st.success("✅ GENUINE")
-        elif prediction == "FAKE":
+    prediction, confidence = detect_fake_review(review)
+
+    st.divider()
+    a, b, c = st.columns(3)
+    with a:
+        if prediction == "FAKE":
             st.error("❌ FAKE")
+        elif prediction == "GENUINE":
+            st.success("✅ GENUINE")
         else:
             st.warning("⚠️ UNCERTAIN")
-    with col2:
-        st.metric("Confidence", f"{confidence:.0f}%")
-    with col3:
-        level = "High" if prediction == "GENUINE" else "Low"
-        st.metric("Authenticity", level)
-    
+    with b:
+        st.metric("Confidence", f"{confidence:.1f}%")
+    with c:
+        st.metric("Words", len(review.split()))
+
     st.progress(confidence / 100)
-    
+    st.info("🧠 Prediction generated using Regex + Keyword Pattern Analysis.")
+
     st.divider()
-    st.markdown("### 📊 Analysis Details")
-    col_left, col_right = st.columns(2)
-    with col_left:
-        caps_ratio = sum(1 for c in review_input if c.isupper()) / len(review_input) if len(review_input) > 0 else 0
+    st.subheader("📊 Analysis Details")
+    left, right = st.columns(2)
+    with left:
+        caps_ratio = sum(1 for c in review if c.isupper()) / len(review) if len(review) > 0 else 0
+        st.write(f"**Prediction:** {prediction}")
+        st.write(f"**Confidence:** {confidence:.1f}%")
+        st.write(f"**Word Count:** {len(review.split())}")
         st.write(f"**Capitalization:** {caps_ratio*100:.1f}%")
-        st.write(f"**Exclamation marks:** {review_input.count('!')}")
-        st.write(f"**Question marks:** {review_input.count('?')}")
-        st.write(f"**Word count:** {len(review_input.split())}")
-    with col_right:
+    with right:
         extreme_words = ['amazing', 'incredible', 'perfect', 'awesome', 'best', 'worst', 'terrible', 'horrible']
-        extreme_count = sum(1 for w in extreme_words if re.search(r'\b' + w + r'\b', review_input.lower()))
-        st.write(f"**Extreme words found:** {extreme_count}")
+        extreme_count = sum(1 for w in extreme_words if re.search(r'\b' + w + r'\b', review.lower()))
         genuine_words = ['but', 'however', 'problem', 'issue', 'downside', 'complaint', 'not perfect']
-        genuine_count = sum(1 for w in genuine_words if re.search(r'\b' + w + r'\b', review_input.lower()))
-        st.write(f"**Balanced language indicators:** {genuine_count}")
-        has_details = bool(re.search(r'\d+\s*(days?|weeks?|months?|hours?|%)', review_input))
-        st.write(f"**Specific timeframe/details:** {'Yes' if has_details else 'No'}")
+        genuine_count = sum(1 for w in genuine_words if re.search(r'\b' + w + r'\b', review.lower()))
+        st.write(f"**Exclamation Marks:** {review.count('!')}")
+        st.write(f"**Extreme Words Found:** {extreme_count}")
+        st.write(f"**Balanced Language Indicators:** {genuine_count}")
+        st.write(f"**Characters:** {len(review)}")
+
     st.divider()
     if prediction == "FAKE":
-        st.error("**🚨 This review appears FAKE**\n\nRed flags: Extreme language • Generic phrases • Unnatural patterns")
+        st.error(
+            "🚨 **This review appears to be FAKE.**\n\n"
+            "The rule-based engine detected patterns commonly associated with deceptive reviews, "
+            "such as extreme language, generic phrases, or unnatural exaggeration."
+        )
     elif prediction == "GENUINE":
-        st.success("**✅ This review appears GENUINE**\n\nIndicators: Balanced tone • Specific details • Natural language")
+        st.success(
+            "✅ **This review appears to be GENUINE.**\n\n"
+            "The review shows balanced tone, specific details, and natural language patterns."
+        )
     else:
-        st.warning("**❓ Mixed signals**\n\nThis review has both genuine and suspicious patterns.")
-elif analyze_button and not review_input.strip():
-    st.error("⚠️ Please enter a review first!")
+        st.warning(
+            "❓ **Mixed signals detected.**\n\n"
+            "This review has both genuine and suspicious patterns."
+        )
+
+st.markdown("---")
+st.caption("Developed by Dhruv Bhoir | Fake Review Detection System")
