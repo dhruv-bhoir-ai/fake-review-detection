@@ -1,5 +1,10 @@
 # 🔍 Fake Review Detection System
 
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-Deployed-red)
+![Scikit-learn](https://img.shields.io/badge/Scikit--learn-ML-orange)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 A Machine Learning-based web application that detects whether a product review is **Genuine** or **Fake** using Natural Language Processing (NLP) and TF-IDF vectorization. The application provides an intuitive Streamlit interface for real-time review analysis.
 
 ---
@@ -72,7 +77,7 @@ fake-review-detection-system/
 Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/fake-review-detection-system.git
+git clone https://github.com/dhruv-bhoir-ai/fake-review-detection-system.git
 ```
 
 Move into the project folder
@@ -109,7 +114,7 @@ streamlit run app.py
 
 ## 📊 Dataset
 
-The model was trained on an e-commerce product review dataset containing fake and genuine reviews.
+The model was trained on an e-commerce product review dataset containing both genuine and fake reviews. Reviews were preprocessed using NLP techniques and transformed using TF-IDF vectorization before training the machine learning model.
 
 ---
 
