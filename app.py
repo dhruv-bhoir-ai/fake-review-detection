@@ -163,13 +163,14 @@ st.divider()
 with st.sidebar:
     st.title("About")
     st.write("""
-This application uses a rule-based pattern analysis engine
-to classify product reviews as **Fake** or **Genuine**.
+This application helps you to check whether a product is 
+**Genuine** or **Fake**.
 ### Tech Stack
 - Python
 - Streamlit
-- Regex
-- Keyword Scoring
+- Scikit-learn
+- NLTK
+- TF-IDF Vectorizer
 """)
 
 st.subheader("Enter Review")
