@@ -163,14 +163,14 @@ st.divider()
 with st.sidebar:
     st.title("About")
     st.write("""
-This application helps you to check whether a product is 
-**Genuine** or **Fake**.
+This application uses a machine learning-based classification engine to detect whether a product review is **Fake** or **Genuine**.
+
 ### Tech Stack
 - Python
 - Streamlit
 - Scikit-learn
-- NLTK
-- TF-IDF Vectorizer
+- TF-IDF Vectorization
+- MLP Neural Network
 """)
 
 st.subheader("Enter Review")
